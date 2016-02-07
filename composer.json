@@ -1,6 +1,6 @@
 {
 	"name": "hypejunction/notifications_html_handler",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"type": "elgg-plugin",
 	"description": "Notification Editor for Elgg",
 	"homepage": "http://hypejunction.com",
