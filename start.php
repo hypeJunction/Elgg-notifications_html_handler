@@ -19,6 +19,8 @@ function notifications_html_handler_init() {
 	_elgg_services()->hooks->clearHandlers('send', 'notification:email');
 	elgg_register_plugin_hook_handler('send', 'notification:email', 'notifications_html_handler_send_email_notification');
 
+	elgg_register_plugin_hook_handler('email', 'system', 'notifications_html_handler_send_system_email', 1);
+
 	elgg_register_plugin_hook_handler('format', 'notification', 'notifications_html_handler_format', 9999);
 
 	elgg_register_action('notifications/html/test', __DIR__ . '/actions/notifications/html/test.php', 'admin');
@@ -84,10 +86,72 @@ function notifications_html_handler_send_email_notification($hook, $type, $resul
 }
 
 /**
+ * Send emails initiated by elgg_send_email() wrapped as HTML
+ * 
+ * @param string $hook   "email"
+ * @param string $type   "system"
+ * @param mixed  $return Email params or bool
+ * @param array  $params Hook params
+ * @return mixed
+ */
+function notifications_html_handler_send_system_email($hook, $type, $return, $params) {
+
+	if (!is_array($return)) {
+		// another hook has already sent the email
+		return;
+	}
+	
+	$email_params = elgg_extract('params', $params);
+	$notification = elgg_extract('notification', $email_params);
+
+	if ($notification instanceof \Elgg\Notifications\Notification) {
+		// Let the default handler handle it
+		return;
+	}
+
+	$to = \Elgg\Mail\Address::fromString($params['to']);
+	$from = \Elgg\Mail\Address::fromString($params['from']);
+
+	$recipients = get_user_by_email($to->getEmail());
+	$senders = get_user_by_email($from->getEmail());
+
+	if ($recipients) {
+		$recipient = $recipients[0];
+	} else {
+		$recipient = new ElggUser();
+		$recipient->email = $to->getEmail();
+		$recipient->name = $to->getName();
+	}
+
+	$site = elgg_get_site_entity();
+	if ($senders) {
+		$sender = $senders[0];
+	} else if ($from->getEmail() == $site->email) {
+		$sender = $site;
+	} else {
+		$sender = new ElggUser();
+		$sender->email = $from->getEmail();
+		$sender->name = $from->getName();
+	}
+
+	$event = null;
+	if (isset($email_params['object']) && isset($email_params['action'])) {
+		$event = new \Elgg\Notifications\Event($email_params['object'], $email_params['action'], $sender);
+	}
+	$email_params['event'] = $event;
+
+	$language = $recipient->language ? : 'en';
+	$summary = $email_params['summary'] ? : '';
+	$email_params['notification'] = new \Elgg\Notifications\Notification($sender, $recipient, $language, $params['subject'], $params['body'], $summary, $email_params);
+	return elgg_trigger_plugin_hook('send', "notification:email", $email_params, false);
+
+}
+
+/**
  * Send an email to any email address
  *
- * @param mixed $from     Email address or string: "name <email>" or \Zend\Mail\Address
- * @param mixed $to       Email address or string: "name <email>" or \Zend\Mail\Address
+ * @param mixed $from     Email address or string: "name <email>"
+ * @param mixed $to       Email address or string: "name <email>"
  * @param string $subject The subject of the message
  * @param string $body    The message body
  * @param array  $params  Optional parameters
@@ -112,7 +176,7 @@ function notifications_html_handler_send_email($from, $to, $subject, $body, arra
 	// $mail_params is passed as both params and return value. The former is for backwards
 	// compatibility. The latter is so handlers can now alter the contents/headers of
 	// the email by returning the array
-	$options = _elgg_services()->hooks->trigger('email', 'system', $options, $options);
+	$options = elgg_trigger_plugin_hook('email', 'system', $options, $options);
 	if (!is_array($options)) {
 		// don't need null check: Handlers can't set a hook value to null!
 		return (bool) $options;
