@@ -78,6 +78,7 @@ function notifications_html_handler_send_email_notification($hook, $type, $resul
 	$from = new Zend\Mail\Address($from_email, $from_name);
 
 	$email_params = array_merge((array) $notification->params, $params);
+	$email_params['notification'] = $notification;
 
 	return notifications_html_handler_send_email($from->toString(), $to->toString(), $notification->subject, $notification->body, $email_params);
 }
