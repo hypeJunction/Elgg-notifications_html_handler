@@ -1,3 +1,13 @@
+<a name="1.0.2"></a>
+## [1.0.2](https://github.com/hypeJunction/Elgg-notifications_html_handler/compare/1.0.1...v1.0.2) (2016-02-08)
+
+
+### Bug Fixes
+
+* **hooks:** use filtered return value ([b0e6a91](https://github.com/hypeJunction/Elgg-notifications_html_handler/commit/b0e6a91))
+
+
+
 <a name="1.0.1"></a>
 ## [1.0.1](https://github.com/hypeJunction/Elgg-notifications_html_handler/compare/1.0.0...v1.0.1) (2016-02-07)
 
