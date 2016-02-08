@@ -87,7 +87,7 @@ function notifications_html_handler_send_email_notification($hook, $type, $resul
 
 /**
  * Send emails initiated by elgg_send_email() wrapped as HTML
- * 
+ *
  * @param string $hook   "email"
  * @param string $type   "system"
  * @param mixed  $return Email params or bool
@@ -100,8 +100,8 @@ function notifications_html_handler_send_system_email($hook, $type, $return, $pa
 		// another hook has already sent the email
 		return;
 	}
-	
-	$email_params = elgg_extract('params', $params);
+
+	$email_params = elgg_extract('params', $return);
 	$notification = elgg_extract('notification', $email_params);
 
 	if ($notification instanceof \Elgg\Notifications\Notification) {
@@ -109,8 +109,8 @@ function notifications_html_handler_send_system_email($hook, $type, $return, $pa
 		return;
 	}
 
-	$to = \Elgg\Mail\Address::fromString($params['to']);
-	$from = \Elgg\Mail\Address::fromString($params['from']);
+	$to = \Elgg\Mail\Address::fromString($return['to']);
+	$from = \Elgg\Mail\Address::fromString($return['from']);
 
 	$recipients = get_user_by_email($to->getEmail());
 	$senders = get_user_by_email($from->getEmail());
@@ -142,7 +142,7 @@ function notifications_html_handler_send_system_email($hook, $type, $return, $pa
 
 	$language = $recipient->language ? : 'en';
 	$summary = $email_params['summary'] ? : '';
-	$email_params['notification'] = new \Elgg\Notifications\Notification($sender, $recipient, $language, $params['subject'], $params['body'], $summary, $email_params);
+	$email_params['notification'] = new \Elgg\Notifications\Notification($sender, $recipient, $language, $return['subject'], $return['body'], $summary, $email_params);
 	return elgg_trigger_plugin_hook('send', "notification:email", $email_params, false);
 
 }
@@ -297,7 +297,7 @@ function notifications_html_handler_get_transport() {
 
 /**
  * Wraps HTML notification into a proper markup
- * 
+ *
  * @param string $hook         "format"
  * @param string $type         "notification"
  * @param string $notification Notificaiton
