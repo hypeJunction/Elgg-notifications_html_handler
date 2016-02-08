@@ -5,6 +5,8 @@
 $notification = elgg_extract('notification', $vars);
 $title = $notification->subject;
 $body = nl2br($notification->body);
+$body = preg_replace("/<br \/>\s*<br \/>/", "<br />", $body);
+
 $header = elgg_view('page/notification/header', $vars);
 $footer = elgg_view('page/notification/footer', $vars);
 ?>
