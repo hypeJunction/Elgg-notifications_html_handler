@@ -1,3 +1,14 @@
+<a name="1.0.4"></a>
+## [1.0.4](https://github.com/hypeJunction/Elgg-notifications_html_handler/compare/1.0.3...v1.0.4) (2016-03-23)
+
+
+### Bug Fixes
+
+* **deps:** SMTP transport requires Zend ServiceManager not explicitly defined in required p ([201d9df](https://github.com/hypeJunction/Elgg-notifications_html_handler/commit/201d9df))
+* **views:** remove duplicate br tags from notifications ([b2faa06](https://github.com/hypeJunction/Elgg-notifications_html_handler/commit/b2faa06))
+
+
+
 <a name="1.0.3"></a>
 ## [1.0.3](https://github.com/hypeJunction/Elgg-notifications_html_handler/compare/1.0.2...v1.0.3) (2016-02-08)
 
