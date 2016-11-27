@@ -140,11 +140,10 @@ function notifications_html_handler_send_system_email($hook, $type, $return, $pa
 	}
 	$email_params['event'] = $event;
 
-	$language = $recipient->language ? : 'en';
-	$summary = $email_params['summary'] ? : '';
+	$language = $recipient->language ?: 'en';
+	$summary = $email_params['summary'] ?: '';
 	$email_params['notification'] = new \Elgg\Notifications\Notification($sender, $recipient, $language, $return['subject'], $return['body'], $summary, $email_params);
 	return elgg_trigger_plugin_hook('send', "notification:email", $email_params, false);
-
 }
 
 /**
@@ -227,8 +226,8 @@ function notifications_html_handler_send_email($from, $to, $subject, $body, arra
 				}
 
 				$attachment = new \Zend\Mime\Part(fopen($file->getFilenameOnFilestore(), 'r'));
-				$attachment->type = $file->getMimeType() ? : $file->detectMimeType();
-				$attachment->filename = $file->originalfilename ? : basename($file->getFilename());
+				$attachment->type = $file->getMimeType() ?: $file->detectMimeType();
+				$attachment->filename = $file->originalfilename ?: basename($file->getFilename());
 				$attachment->disposition = Zend\Mime\Mime::DISPOSITION_ATTACHMENT;
 				$attachment->encoding = Zend\Mime\Mime::ENCODING_BASE64;
 				$body->addPart($attachment);
